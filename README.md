@@ -11,6 +11,7 @@ I'm sharing theese freely because there was very few scenes that fitted me.
 
 
 OUTDOOR LIGHTNING TIMER
+
 -- SCENE FUNCTION
 -- This is a basic scene that turns outdoor lightning on 15 minutes before 
 -- sunset and off 15 minutes after sunrise. 
@@ -21,7 +22,9 @@ OUTDOOR LIGHTNING TIMER
 -- CHANGELOG
 -- 1.0 - Scene is brand new
 
+
 PUSH ON DEVICE START AND STOP
+
 -- SCENE FUNCTION
 -- This is a basic scene that sends a PUSH notification when a device is 
 -- using more than X watt and sends another when the device have been using less
@@ -47,7 +50,9 @@ PUSH ON DEVICE START AND STOP
 -- CHANGELOG
 -- 1.0 - Scene is brand new
 
+
 SIMPLE LUA SCHEDULER WITH POWER CHECK
+
 -- SCENE FUNCTION
 -- This is a basic scene that turns device(s) on or off on a schedule. 
 -- If CONTROL is "Off" then this scene is not active till CONTROL is "On"
@@ -76,7 +81,9 @@ SIMPLE LUA SCHEDULER WITH POWER CHECK
 -- CHANGELOG
 -- 1.0 - Scene is brand new
 
+
 SIMPLE LUA SCHEDULER
+
 -- SCENE FUNCTION
 -- This is a basic scene that turns device(s) on or off on a schedule. 
 -- If CONTROL is "Off" then this scene is not active till CONTROL is "On"
