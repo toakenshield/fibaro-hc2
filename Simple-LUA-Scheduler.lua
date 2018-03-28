@@ -36,7 +36,7 @@ statusLadingStue
 -------------------- USER SETTINGS -----------------------
 -- GLOBAL VARIABLES
 -- You need to create two variables in order for this scene to work
--- CONTROL variable needs to have two settings, "On" and "Off"
+-- CONTROL variable needs to have two settings, "On" and "Off" 
 -- STATUS variable needs to have three settings, "On", "Off" and "Running"
 
 pluggID = {115};			-- ID of device controlled
