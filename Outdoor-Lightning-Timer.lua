@@ -9,7 +9,7 @@
 
 -- SCENE FUNCTION
 -- This is a basic scene that turns outdoor lightning on 15 minutes before 
--- sunset and off 15 minutes after sunrise.
+-- sunset and off 15 minutes after sunrise. 
 
 -- GPS POSITION
 -- For this scene to work you have to have set your GPS-position in HC2
