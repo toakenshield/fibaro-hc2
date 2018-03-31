@@ -1,0 +1,57 @@
+--[[
+%% properties
+%% events
+%% globals
+--]]
+
+-- SCENE FUNCTION
+-- This is my SONOS TTS. It sends a call to SONOS virtual device to
+-- start TTS and send a message stored in messagevariable to SONOS
+
+-- MESSAGE VARIABLE
+-- The reason that I use a message variable is that I can use other scenes to 
+-- store message in that variable and start this scene to read it. 
+
+-- OTHER THINGS YOU NEED
+-- You need SONOS remote virtual device. 
+-- I used mine from the following webpage:
+-- https://www.domotique-fibaro.fr/topic/616-fibaro-hc2-vd-sonos-remote-t%C3%A3%C2%A9l%C3%A3%C2%A9commande-pour-diffuseur-sonos/
+
+-- CHANGELOG
+-- 1.0 - Scene is brand new
+
+-------------------- USER SETTINGS -----------------------
+-- GLOBAL VARIABLES
+-- You need to create one variables in order for this scene to work
+-- MESSAGE variable is used to store the message you want read. 
+
+messagevariable = "SonosBeskjed"	-- Change to your message variable
+lang = "nb-no"	-- Language: see http://www.voicerss.org/api/documentation.aspx to get your language code 
+vol = 75	-- Volume for SONOS
+local sid = 205	-- ID for Sonos remote virtual device
+-----------------------------------------------------------
+
+
+
+------------- DO NOT CHANGE LINES BELOW -------------------
+local beskjed = fibaro:getGlobal(messagevariable)
+
+local bid = 28	-- ID for button "Process" on remote
+
+local params = {
+  message = beskjed,
+  duration = 'auto',
+  language = lang,
+  volume = vol,
+}
+
+local _f = fibaro
+
+local _x ={root="x_sonos_object",load=function(b)local c=_f:getGlobalValue(b.root)if string.len(c)>0 then local d=json.decode(c)if d and type(d)=="table"then return d else fibaro:debug("Unable to process data, check variable")end else fibaro:debug("No data found!")end end,set=function(b,e,d)local f=b:load()if f[e]then for g,h in pairs(d)do f[e][g]=h end else f[e]=d end;_f:setGlobal(b.root,json.encode(f))end,get=function(b,e)local f=b:load()if f and type(f)=="table"then for g,h in pairs(f)do if tostring(g)==tostring(e or"")then return h end end end;return nil end}
+
+_x:set(tostring(sid), { tts = params })
+
+_f:call(sid, "pressButton", bid)
+
+fibaro:debug("Sent message: ")
+fibaro:debug(beskjed)
