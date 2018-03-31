@@ -1,0 +1,164 @@
+--[[
+%% autostart
+%% properties
+70 value
+styringPIRstue
+overridePIRstue
+%% globals
+--]]
+
+-- SCENE FUNCTION
+-- This is a basic scene that uses a PIR detector to turn on lights.
+-- When PIR is triggered then the light(s) turns on for a period of time.
+-- If CONTROL is "Off" then this scene is not active till CONTROL is "On"
+-- When light turns on then STATUS variable changes to "Active"
+-- Ehen light turns off then STATUS variable changes to "Inactive"
+
+-- CONTROL OPTION
+-- I like to have the option to turn PIR on or off. 
+-- The control global alue helps me do that. 
+
+-- STATUS OPTION
+-- I like to know if PIR is active and use this variable in other scenes
+-- or devices like my CONTROL PANEL.
+
+-- OVERRIDE OPTION
+-- If you want to override and have lights on and disable PIR without 
+-- disrupting this scene you can override with this variable.
+-- When OVERRIDE variable is "On" then timer is reset to endtimer and light is on. 
+-- When OVERRIDE variable is "Off" this scene functions as normal.
+
+-- CONTROL PANEL
+-- I have a "Control Panel" device that tells me if CONTROL is active
+-- and the STATUS of PIR. This can be found on my GITHUB page.
+
+-- CHANGELOG
+-- 1.0 - Scene is brand new
+-- 1.1 - Put in OVERRIDE option
+
+-------------------- USER SETTINGS -----------------------
+-- GLOBAL VARIABLES
+-- You need to create three variables in order for this scene to work
+-- CONTROL variable needs to have two settings, "On" and "Off"
+-- STATUS variable needs to have two settings, "Active" and "Inactive"
+-- OVERRIDE variable needs to have two settings, "On" and "Off"
+
+lights = {94,98};			-- ID of light. If more than one light use , as seperator 151,152
+sensor = 70				-- ID of PIR
+nightdimValue = "10"	-- Dimmer value to set during night
+endTimer = 300			-- How long to keep lights on (in seconds)
+control = "styringPIRstue"	-- Name of your CONTROL variable
+status = "statusPIRstue"		-- Name of your STATUS variable
+override = "overridePIRstue"	-- Name of your OVERRIDE varable
+debug = true			-- Set true if you want debug, if not set false
+
+--CHANGE IN HEADER (TOP OF SCRIPT)
+-- For this scene to work you need to change these things in top of this scene
+-- 1) Change number 70 to your PIR ID
+-- 2) Change styringPIRstue to your control variable name
+-- 2) Change overridePIRstue to your override variable name
+-----------------------------------------------------------
+
+
+
+------------- DO NOT CHANGE LINES BELOW -------------------
+startSource = fibaro:getSourceTrigger();
+
+-- Give debug different colors
+Debug = function ( color, message )
+  fibaro:debug(string.format('<%s style="color:%s;">%s</%s>', "span", color, message, "span")); 
+end
+
+-- Kill new instance of this scene
+if (fibaro:countScenes() > 1) then
+  if debug == true then Debug( "red", "Abort, count scene = "..fibaro:countScenes()) end;
+  fibaro:abort();
+end
+
+-- Scene triggered, funtion
+SceneTriggered = function()
+  if fibaro:getGlobalValue(control) == "On" then 					-- CONTROL -- 
+    turnLightOn();
+    startTimer();
+  elseif fibaro:getGlobalValue(control) == "Off" then 				-- CONTROL -- 
+    if debug == true then Debug( "red", "CONTROL is OFF, PIR and timer is deavtivated") end; 	-- CONTROL -- 
+  end																-- CONTROL -- 
+end
+
+-- Timer, function
+startTimer = function ()
+  if debug then
+    Debug( "green", "Timer started"); 
+  end
+  local counter = endTimer
+  
+  while(counter > 0)
+  do
+    counter = counter - 1
+    --Debug( "green", counter); -- Displays a countdown if -- is removed before Debud
+    fibaro:sleep(1000)
+    if
+      tonumber(fibaro:getValue(sensor, "value")) > 0 then 
+      counter = endTimer;
+    end
+    
+    if
+      fibaro:getGlobalValue(override) == "On" then
+      counter = endTimer;
+    end
+    
+    ---- START CHECK LIGHTS
+    for i = 1,#lights do
+      lightItems = lights[i];
+      status2 = fibaro:getValue(lightItems, "value");	-- Checks if light is on (first numer ONLY)
+      if status2 ~= "0" then 							-- If light is on then nothing happens
+        break
+      else counter = 0									-- If light is switched off manually then timer resets and light(s) turn off
+        if debug == true then Debug( "grey", "Light(s) was turned off manually") end; 
+        if debug == true then Debug( "green", "Light(s) turn off") end; 
+      end
+    end
+    ---- END CHECK LIGHTS
+    
+    ----- START CONTROL OFF
+    if fibaro:getGlobalValue(control) == "Off" then
+      if debug == true then Debug( "grey", "CONTROL was turned OFF, PIR and timer is deavtivated") end; 
+      if debug == true then Debug( "green", "Light(s) turns off") end; 
+      counter = 0
+    end
+    ----- END CONTROL OFF
+    
+  end
+  if debug then
+    Debug( "green", "Timer stopped"); 
+  end
+  for i = 1,#lights do
+    lightItems = lights[i];
+    fibaro:call(lightItems, "turnOff");
+    fibaro:setGlobal(status, "Inactive");
+    if debug == true then Debug( "green", "Light(s) turn off") end;
+  end
+  
+end
+
+-- TurnOn lights, functions
+turnLightOn = function()
+  for i = 1,#lights do
+    lightItems = lights[i];
+    fibaro:call(lightItems, "turnOn");
+    fibaro:setGlobal(status, "Active");
+    if debug == true then Debug( "green", "Light(s) turn on") end;
+  end
+end
+
+------------------ START OF SCENE ----------------------
+if ( startSource["type"] == "other" ) then
+    SceneTriggered();
+elseif ( startSource["type"] == "property" ) then
+     SceneTriggered();
+end
+
+version = "1.1"
+
+Debug( "orange", "PIR activated lights - LUA Scripting by Tor Gaute Lien - 2018" );
+Debug( "orange", "Version: "..version);
