@@ -33,7 +33,7 @@ overridePIRstue
 -- and the STATUS of PIR. This can be found on my GITHUB page.
 
 -- CHANGELOG
--- 1.0 - Scene is brand new
+-- 1.0 - Scene is brand new 
 -- 1.1 - Put in OVERRIDE option
 
 -------------------- USER SETTINGS -----------------------
