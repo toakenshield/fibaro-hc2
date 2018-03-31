@@ -1,0 +1,155 @@
+--[[
+%% autostart
+%% properties
+%% globals
+28 value
+103 value
+108 value
+173 value
+17 value
+143 value
+24 value
+--]]
+
+-- SCENE FUNCTION
+-- Sends PUSH notice when temperature is below a certain value (alerttemp variable).
+-- This repeats every x minutes (sleeptime variable) when temperature is below alerttemp.
+
+-- ZONE NAME AND ID
+-- You need to find the ID on your temperature sensors and insert it in IdPanel.
+-- You should then name the zone in the variable zones according to what room the 
+-- temperature ID is in or function it have. 
+-- You need to make sure that the ID of temperature sensor and name is in the
+-- same place in IdPanel and zones (number 1 in IdPanel corresponds with 
+-- number 1 in zones - 28 in IdPanel is named Stue in this scene).
+-- If you have more than one (this example have seven) you seperate IDs and 
+-- names with a , (example 1,2,3,4,5,6,7).
+
+-- NUMBER OF TEMPERATURE SENSORS
+-- This scene habve seven sensors. If you have more or less sensors, scroll down to
+-- a section called "SEE HERE IF YOU NEED TO CHANGE NUMBER OF SENSORS YOU USE"
+-- Follow the instructions there.
+
+-- CHANGELOG
+-- 1.0 - Scene is brand new
+
+-------------------- USER SETTINGS -----------------------
+-- GLOBAL VARIABLES
+-- You dont need any global variables to make this scene work.
+
+IdPanel = {28,103,108,173,17,143,24};  -- ID of temperature sensors
+zones = {"Stue","Kjøkken","Bad","Mathias","Lekerom","Smiubakken","Sofie"}	-- Name of zones you want to check
+phone = {6,32};				-- ID of phones you want push-notice on
+alerttemp = 15				-- Temperature you want alert if below
+sleeptime = 1800*1000 		-- Time untill next check (1800*1000 = 30 minuttes)
+debug = true				-- Set true if you want debug, if not set false
+
+--CHANGE IN HEADER (TOP OF SCRIPT)
+-- For this scene to work you need to change these things in top of this scene
+-- 1) Change the ID of temperature sensors used in IdPanel to your sensor IDs ("28 value" changes to "YOURID value")
+-----------------------------------------------------------
+
+
+
+
+------------- DO NOT CHANGE LINES BELOW -------------------
+startSource = fibaro:getSourceTrigger();
+
+-- Give debug different colors
+Debug = function ( color, message )
+  fibaro:debug(string.format('<%s style="color:%s;">%s</%s>', "span", color, message, "span")); 
+end
+
+-- Kill new instance of this scene
+if (fibaro:countScenes() > 1) then
+  if debug == true then Debug( "red", "Abort, count scene = "..fibaro:countScenes()) end;
+  fibaro:abort();
+end
+
+-- testf, function
+testf = function()
+  if (tonumber(fibaro:getValue(IdPanel2, "value")) <= tonumber(alerttemp)) then
+    if debug == true then Debug( "green", "Rommet " .. zones2 .. " er under alarmgrensen for lav temperatur " .. alerttemp .. "...") end;
+    
+    text = ("Rommet " .. zones2 .. " er under alarmgrensen for lav temperatur " .. alerttemp .. "...");
+    for i = 1,#phone do
+      phones = phone[i];
+      fibaro:call(phones, "sendPush", text);
+    end
+    fibaro:sleep(500)
+    credits();
+  end
+end
+
+-- Credits
+credits = function()
+  version = "1.0"
+  Debug( "orange", "Freeze alarm - LUA Scripting by Tor Gaute Lien - 2018" );
+  Debug( "orange", "Version: "..version);
+end
+
+-- SceneTriggered, function
+SceneTriggered = function()
+  
+    -- SEE HERE IF YOU NEED TO CHANGE NUMBER OF SENSORS YOU USE
+    -- BEGIN FIRST ZONE
+    for i = 1,#IdPanel and 1,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END FIRST ZONE
+    -- BEGIN SECOND ZONE -- REMOVE TO "END FOURTH ZONE" IF YOU ONLY HAVE ONE ZONE
+    for i = 2,#IdPanel and 2,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END FIRST ZONE
+    -- BEGIN THIRD ZONE -- REMOVE TO "END FOURTH ZONE" IF YOU ONLY HAVE TWO ZONES
+    for i = 3,#IdPanel and 3,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END THIRD ZONE
+    -- BEGIN FOURTH ZONE -- REMOVE TO "END FOURTH ZONE" IF YOU ONLY HAVE THREE ZONES
+    for i = 4,#IdPanel and 4,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END FOURTH ZONE
+    -- BEGIN FIFTH ZONE -- REMOVE TO "END FIFTH ZONE" IF YOU ONLY HAVE FOUR ZONES
+    for i = 5,#IdPanel and 5,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END FIFTH ZONE
+    -- BEGIN SIXTH ZONE -- REMOVE TO "END SIXTH ZONE" IF YOU ONLY HAVE FIVE ZONE
+    for i = 6,#IdPanel and 6,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END SIXTH ZONE
+    -- BEGIN SEVENTH ZONE -- REMOVE TO "END SEVENTH ZONE" IF YOU ONLY HAVE FOUR ZONES
+    for i = 7,#IdPanel and 7,#zones do
+      IdPanel2 = IdPanel[i];
+      zones2 = zones[i];
+      testf();
+    end
+    -- END SEVENTH ZONE-- IF YOU NEED MORE ZONES, COPY A ZONE AND CHANGE THE NUMBER (1,2,3,4,5,6 OR 7) TO NUMER 8 +++
+    
+end
+
+if ( startSource["type"] == "other" ) then
+    SceneTriggered();
+end
+
+------------------ START OF SCENE ----------------------
+while true do
+  SceneTriggered();
+  fibaro:sleep(sleeptime);
+end
